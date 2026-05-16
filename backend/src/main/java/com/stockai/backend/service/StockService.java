@@ -1,11 +1,13 @@
 package com.stockai.backend.service;
 
+import com.stockai.backend.dto.ReorderRecommendationDTO;
 import com.stockai.backend.dto.StockStatusDTO;
 import com.stockai.backend.model.*;
 import com.stockai.backend.repository.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -13,11 +15,14 @@ public class StockService {
 
     private final StockMovementRepository movementRepo;
     private final PieceRepository pieceRepo;
-
+    private final SupplierPartRepository supplierPartRepo;
+    private final StockCalculatorService stockCalculatorService;
     public StockService(StockMovementRepository movementRepo,
-                        PieceRepository pieceRepo) {
+                        PieceRepository pieceRepo ,SupplierPartRepository supplierPartRepo,StockCalculatorService stockCalculatorService ) {
         this.movementRepo = movementRepo;
         this.pieceRepo = pieceRepo;
+        this.supplierPartRepo=supplierPartRepo;
+        this.stockCalculatorService=stockCalculatorService;
     }
 
     public StockMovement addStock(Long pieceId, int quantity) {
@@ -57,13 +62,7 @@ public class StockService {
     }
 
     public int getStock(Long pieceId) {
-
-        List<StockMovement> movements = movementRepo.findAll();
-
-        return movements.stream()
-                .filter(m -> m.getPiece().getId().equals(pieceId))
-                .mapToInt(m -> m.getType().equals("ENTRY") ? m.getQuantity() : -m.getQuantity())
-                .sum();
+        return stockCalculatorService.calculateStock(pieceId);
     }
 
 
@@ -97,5 +96,53 @@ public class StockService {
                 .filter(StockStatusDTO::isLowStock)
                 .toList();
     }
+
+
+
+
+
+    public List<ReorderRecommendationDTO> getReorderRecommendations() {
+
+        List<Piece> pieces = pieceRepo.findAll();
+
+        List<ReorderRecommendationDTO> result = new ArrayList<>();
+
+        for (Piece p : pieces) {
+
+            int stock = getStock(p.getId());
+
+            if (stock <= p.getMinimumStock()) {
+
+                SupplierPart best = supplierPartRepo
+                        .findByPieceIdOrderByPriceAsc(p.getId())
+                        .stream()
+                        .findFirst()
+                        .orElse(null);
+
+                String supplierName = (best != null)
+                        ? best.getSupplier().getName()
+                        : "N/A";
+
+                int recommendedQty = p.getMinimumStock() * 2;
+
+                result.add(new ReorderRecommendationDTO(
+                        p.getId(),
+                        p.getReference(),
+                        p.getName(),
+                        stock,
+                        p.getMinimumStock(),
+                        recommendedQty,
+                        supplierName,
+                        "Low stock detected"
+                ));
+            }
+        }
+
+        return result;
+    }
+
+
+
+
 
 }
