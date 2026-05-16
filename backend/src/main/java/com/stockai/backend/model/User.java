@@ -1,4 +1,4 @@
-package com.stockai.stock_ai_backend.model;
+package com.stockai.backend.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

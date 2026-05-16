@@ -1,4 +1,4 @@
-package com.stockai.stock_ai_backend;
+package com.stockai.backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

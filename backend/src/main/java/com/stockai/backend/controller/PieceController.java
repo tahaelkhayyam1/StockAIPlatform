@@ -1,7 +1,7 @@
-package com.stockai.stock_ai_backend.controller;
+package com.stockai.backend.controller;
 
-import com.stockai.stock_ai_backend.model.Piece;
-import com.stockai.stock_ai_backend.repository.PieceRepository;
+import com.stockai.backend.model.Piece;
+import com.stockai.backend.repository.PieceRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

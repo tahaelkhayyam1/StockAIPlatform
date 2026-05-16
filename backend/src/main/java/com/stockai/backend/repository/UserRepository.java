@@ -1,6 +1,6 @@
-package com.stockai.stock_ai_backend.repository;
+package com.stockai.backend.repository;
 
-import com.stockai.stock_ai_backend.model.User;
+import com.stockai.backend.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

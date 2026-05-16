@@ -1,4 +1,4 @@
-package com.stockai.stock_ai_backend;
+package com.stockai.backend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
