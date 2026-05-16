@@ -1,5 +1,6 @@
 package com.stockai.backend.service;
 
+import com.stockai.backend.dto.StockStatusDTO;
 import com.stockai.backend.model.*;
 import com.stockai.backend.repository.*;
 import org.springframework.stereotype.Service;
@@ -64,4 +65,37 @@ public class StockService {
                 .mapToInt(m -> m.getType().equals("ENTRY") ? m.getQuantity() : -m.getQuantity())
                 .sum();
     }
+
+
+
+    public StockStatusDTO getStockStatus(Long pieceId) {
+
+        Piece piece = pieceRepo.findById(pieceId)
+                .orElseThrow(() -> new RuntimeException("Piece not found"));
+
+        int stock = getStock(pieceId);
+
+        boolean lowStock = stock < piece.getMinimumStock();
+
+        return new StockStatusDTO(
+                piece.getId(),
+                piece.getReference(),
+                piece.getName(),
+                stock,
+                piece.getMinimumStock(),
+                lowStock
+        );
+    }
+
+
+    public List<StockStatusDTO> getLowStockPieces() {
+
+        List<Piece> pieces = pieceRepo.findAll();
+
+        return pieces.stream()
+                .map(p -> getStockStatus(p.getId()))
+                .filter(StockStatusDTO::isLowStock)
+                .toList();
+    }
+
 }
