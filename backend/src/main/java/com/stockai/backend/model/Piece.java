@@ -1,7 +1,7 @@
 package com.stockai.backend.model;
 import jakarta.persistence.*;
 import lombok.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
 @Entity
@@ -24,8 +24,9 @@ public class Piece {
 
     private String criticality; // LOW / MEDIUM / HIGH
 
-    private int minimumStock;
+    private Integer minimumStock;
 
     @OneToMany(mappedBy = "piece")
+    @JsonIgnore
     private List<StockMovement> movements;
 }
