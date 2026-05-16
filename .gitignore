@@ -1,0 +1,15 @@
+# Backend (Spring Boot)
+backend/target/
+*.log
+
+# Frontend (React)
+frontend/node_modules/
+frontend/dist/
+
+# Python (FastAPI)
+ai-service/venv/
+__pycache__/
+
+# System
+.DS_Store
+.env
