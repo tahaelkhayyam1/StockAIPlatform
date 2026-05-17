@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getKpis, getAdvancedKpis } from "../api/dashboard";
 import StockTable from "../components/StockTable";
+import Sidebar from "../components/Sidebar";
 export default function Dashboard() {
 
   const [kpis, setKpis] = useState(null);
@@ -27,6 +28,8 @@ export default function Dashboard() {
   }
 
   return (
+    <div className="flex">
+ 
     <div className="min-h-screen bg-gray-100 p-8">
 
       {/* HEADER */}
@@ -125,6 +128,6 @@ export default function Dashboard() {
       </div>
 <StockTable />
     </div>
-    
+       </div>
   );
 }
