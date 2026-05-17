@@ -2,6 +2,7 @@ package com.stockai.backend.controller;
 
 import com.stockai.backend.dto.AuthRequest;
 import com.stockai.backend.dto.AuthResponse;
+import com.stockai.backend.model.Role;
 import com.stockai.backend.model.User;
 import com.stockai.backend.repository.UserRepository;
 import com.stockai.backend.security.JwtService;
@@ -34,5 +35,20 @@ public class AuthController {
         String token = jwtService.generateToken(user.getEmail());
 
         return new AuthResponse(token);
+    }
+
+
+
+
+    @PostMapping("/register")
+    public User register(@RequestBody User user) {
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        if (user.getRole() == null) {
+            user.setRole(Role.WORKSHOP);
+        }
+
+        return userRepository.save(user);
     }
 }
