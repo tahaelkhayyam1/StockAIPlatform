@@ -1,6 +1,7 @@
 package com.stockai.backend.service;
 
 import com.stockai.backend.dto.ReorderRecommendationDTO;
+import com.stockai.backend.dto.StockOverviewDTO;
 import com.stockai.backend.dto.StockStatusDTO;
 import com.stockai.backend.model.*;
 import com.stockai.backend.repository.*;
@@ -142,7 +143,24 @@ public class StockService {
     }
 
 
+    public List<StockOverviewDTO> getStockOverview() {
 
+        return pieceRepo.findAll()
+                .stream()
+                .map(piece -> {
 
+                    int stock = getStock(piece.getId());
+
+                    return new StockOverviewDTO(
+                            piece.getId(),
+                            piece.getReference(),
+                            piece.getName(),
+                            stock,
+                            piece.getMinimumStock(),
+                            stock < piece.getMinimumStock()
+                    );
+                })
+                .toList();
+    }
 
 }

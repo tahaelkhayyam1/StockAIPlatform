@@ -1,5 +1,6 @@
 package com.stockai.backend.controller;
 
+import com.stockai.backend.dto.StockOverviewDTO;
 import com.stockai.backend.dto.StockStatusDTO;
 import com.stockai.backend.model.StockMovement;
 import com.stockai.backend.service.StockService;
@@ -13,9 +14,10 @@ public class StockController {
 
     private final StockService stockService;
 
+
     public StockController(StockService stockService) {
         this.stockService = stockService;
-    }
+     }
 
     @PostMapping("/entry")
     public StockMovement add(@RequestParam Long pieceId,
@@ -42,4 +44,11 @@ public class StockController {
     public List<StockStatusDTO> getLowStock() {
         return stockService.getLowStockPieces();
     }
+
+
+    @GetMapping("/overview")
+    public List<StockOverviewDTO> getOverview() {
+        return stockService.getStockOverview();
+    }
+
 }

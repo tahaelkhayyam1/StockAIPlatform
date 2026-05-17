@@ -16,14 +16,6 @@ public class StockCalculatorService {
     }
 
     public int calculateStock(Long pieceId) {
-
-        List<StockMovement> movements = movementRepo.findAll();
-
-        return movements.stream()
-                .filter(m -> m.getPiece().getId().equals(pieceId))
-                .mapToInt(m -> m.getType().equals("ENTRY")
-                        ? m.getQuantity()
-                        : -m.getQuantity())
-                .sum();
+        return movementRepo.calculateStockByPieceId(pieceId);
     }
 }

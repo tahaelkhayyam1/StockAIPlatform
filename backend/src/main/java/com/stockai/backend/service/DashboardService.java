@@ -16,14 +16,17 @@ public class DashboardService {
     private final StockMovementRepository movementRepo;
     private final StockService stockService;
     private final SupplierPartRepository supplierPartRepo;
+    private final ConsumptionHistoryRepository consumptionHistoryRepository;
     public DashboardService(PieceRepository pieceRepo,
                             StockMovementRepository movementRepo,
                             StockService stockService,
-                            SupplierPartRepository supplierPartRepo) {
+                            SupplierPartRepository supplierPartRepo,
+                            ConsumptionHistoryRepository consumptionHistoryRepository) {
         this.pieceRepo = pieceRepo;
         this.movementRepo = movementRepo;
         this.stockService = stockService;
         this.supplierPartRepo = supplierPartRepo;
+        this.consumptionHistoryRepository=consumptionHistoryRepository;
     }
 
     public DashboardKpiDTO getKpis() {
@@ -95,11 +98,6 @@ public class DashboardService {
 
 
     private int getTotalConsumption(Long pieceId) {
-
-        return movementRepo.findAll()
-                .stream()
-                .filter(m -> m.getPiece().getId().equals(pieceId))
-                .mapToInt(m -> m.getType().equals("EXIT") ? m.getQuantity() : 0)
-                .sum();
+        return consumptionHistoryRepository.totalConsumptionByPiece(pieceId);
     }
 }
