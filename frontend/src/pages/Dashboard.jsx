@@ -8,7 +8,13 @@ export default function Dashboard() {
   const [advanced, setAdvanced] = useState(null);
 
   useEffect(() => {
+
+    const token = localStorage.getItem("token");
+
+    if (!token) return;   // 🚨 STOP HERE
+
     loadData();
+
   }, []);
 
   const loadData = async () => {
@@ -29,105 +35,105 @@ export default function Dashboard() {
 
   return (
     <div className="flex">
- 
-    <div className="min-h-screen bg-gray-100 p-8">
 
-      {/* HEADER */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-800">
-          StockAI Dashboard
-        </h1>
+      <div className="min-h-screen bg-gray-100 p-8">
 
-        <p className="text-gray-500 mt-2">
-          Inventory intelligence & analytics platform
-        </p>
-      </div>
+        {/* HEADER */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-800">
+            StockAI Dashboard
+          </h1>
 
-      {/* KPI GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-
-        <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="text-gray-500 text-sm">Total Pieces</h2>
-          <p className="text-4xl font-bold mt-2">
-            {kpis.totalPieces}
+          <p className="text-gray-500 mt-2">
+            Inventory intelligence & analytics platform
           </p>
         </div>
 
-        <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="text-gray-500 text-sm">Low Stock Alerts</h2>
-          <p className="text-4xl font-bold mt-2 text-red-500">
-            {kpis.lowStockCount}
-          </p>
+        {/* KPI GRID */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+          <div className="bg-white rounded-xl shadow p-6">
+            <h2 className="text-gray-500 text-sm">Total Pieces</h2>
+            <p className="text-4xl font-bold mt-2">
+              {kpis.totalPieces}
+            </p>
+          </div>
+
+          <div className="bg-white rounded-xl shadow p-6">
+            <h2 className="text-gray-500 text-sm">Low Stock Alerts</h2>
+            <p className="text-4xl font-bold mt-2 text-red-500">
+              {kpis.lowStockCount}
+            </p>
+          </div>
+
+          <div className="bg-white rounded-xl shadow p-6">
+            <h2 className="text-gray-500 text-sm">Stock Movements</h2>
+            <p className="text-4xl font-bold mt-2">
+              {kpis.totalStockMovements}
+            </p>
+          </div>
+
         </div>
 
-        <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="text-gray-500 text-sm">Stock Movements</h2>
-          <p className="text-4xl font-bold mt-2">
-            {kpis.totalStockMovements}
-          </p>
+        {/* ADVANCED SECTION */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          {/* STOCK VALUE */}
+          <div className="bg-white rounded-xl shadow p-6">
+            <h2 className="text-xl font-semibold mb-4">
+              Total Stock Value
+            </h2>
+
+            <p className="text-5xl font-bold text-green-600">
+              € {advanced.totalStockValue.toFixed(2)}
+            </p>
+          </div>
+
+          {/* TOP CONSUMED */}
+          <div className="bg-white rounded-xl shadow p-6">
+            <h2 className="text-xl font-semibold mb-4">
+              Top Consumed Parts
+            </h2>
+
+            <ul className="space-y-2">
+              {advanced.topConsumedPieces.map((p, i) => (
+                <li
+                  key={i}
+                  className="bg-gray-100 rounded p-3"
+                >
+                  {p}
+                </li>
+              ))}
+            </ul>
+          </div>
+
         </div>
 
-      </div>
+        {/* CRITICAL PARTS */}
+        <div className="bg-white rounded-xl shadow p-6 mt-6">
 
-      {/* ADVANCED SECTION */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-        {/* STOCK VALUE */}
-        <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">
-            Total Stock Value
+          <h2 className="text-xl font-semibold mb-4 text-red-500">
+            Critical Parts
           </h2>
 
-          <p className="text-5xl font-bold text-green-600">
-            € {advanced.totalStockValue.toFixed(2)}
-          </p>
+          {advanced.criticalPieces.length === 0 ? (
+            <p>No critical parts detected</p>
+          ) : (
+            <ul className="space-y-2">
+              {advanced.criticalPieces.map((p, i) => (
+                <li
+                  key={i}
+                  className="bg-red-100 text-red-700 rounded p-3"
+                >
+                  ⚠ {p}
+                </li>
+              ))}
+            </ul>
+          )}
+
         </div>
-
-        {/* TOP CONSUMED */}
-        <div className="bg-white rounded-xl shadow p-6">
-          <h2 className="text-xl font-semibold mb-4">
-            Top Consumed Parts
-          </h2>
-
-          <ul className="space-y-2">
-            {advanced.topConsumedPieces.map((p, i) => (
-              <li
-                key={i}
-                className="bg-gray-100 rounded p-3"
-              >
-                {p}
-              </li>
-            ))}
-          </ul>
-        </div>
-
+        <StockTable />
       </div>
-
-      {/* CRITICAL PARTS */}
-      <div className="bg-white rounded-xl shadow p-6 mt-6">
-
-        <h2 className="text-xl font-semibold mb-4 text-red-500">
-          Critical Parts
-        </h2>
-
-        {advanced.criticalPieces.length === 0 ? (
-          <p>No critical parts detected</p>
-        ) : (
-          <ul className="space-y-2">
-            {advanced.criticalPieces.map((p, i) => (
-              <li
-                key={i}
-                className="bg-red-100 text-red-700 rounded p-3"
-              >
-                ⚠ {p}
-              </li>
-            ))}
-          </ul>
-        )}
-
-      </div>
-<StockTable />
     </div>
-       </div>
   );
 }

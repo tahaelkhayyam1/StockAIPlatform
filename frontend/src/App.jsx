@@ -1,47 +1,30 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import MainLayout from "./layouts/MainLayout";
-
 import Dashboard from "./pages/Dashboard";
-import StockPage from "./pages/StockPage";
-import ReorderPage from "./pages/ReorderPage";
+import Login from "./pages/Login";
+import ProtectedRoute from "./auth/ProtectedRoute";
 
-function App() {
+export default function App() {
   return (
     <BrowserRouter>
-
       <Routes>
 
+        {/* LOGIN */}
+        <Route path="/login" element={<Login />} />
+
+        {/* PROTECTED DASHBOARD */}
         <Route
-          path="/"
+          path="/dashboard"
           element={
-            <MainLayout>
+            <ProtectedRoute>
               <Dashboard />
-            </MainLayout>
+            </ProtectedRoute>
           }
         />
 
-        <Route
-          path="/stock"
-          element={
-            <MainLayout>
-              <StockPage />
-            </MainLayout>
-          }
-        />
-
-        <Route
-          path="/reorder"
-          element={
-            <MainLayout>
-              <ReorderPage />
-            </MainLayout>
-          }
-        />
+        {/* DEFAULT ROUTE */}
+        <Route path="*" element={<Login />} />
 
       </Routes>
-
     </BrowserRouter>
   );
 }
-
-export default App;
