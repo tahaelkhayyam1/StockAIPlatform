@@ -1,5 +1,6 @@
 package com.stockai.backend.security;
 
+import com.stockai.backend.model.User;
 import com.stockai.backend.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -48,11 +49,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String email = jwtService.extractEmail(token);
 
-        var user = userRepository.findByEmail(email).orElse(null);
+        User user = userRepository.findByEmail(email).orElse(null);
 
         if (user != null) {
 
-            var authorities = List.of(
+            // 🔥 FIXED ROLE FORMAT (IMPORTANT)
+            List<SimpleGrantedAuthority> authorities = List.of(
                     new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
             );
 

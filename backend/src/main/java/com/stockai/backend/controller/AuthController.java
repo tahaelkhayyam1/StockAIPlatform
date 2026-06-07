@@ -4,6 +4,7 @@ import com.stockai.backend.dto.AuthRequest;
 import com.stockai.backend.dto.AuthResponse;
 import com.stockai.backend.model.Role;
 import com.stockai.backend.model.User;
+import com.stockai.backend.model.UserStatus;
 import com.stockai.backend.repository.UserRepository;
 import com.stockai.backend.security.JwtService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,11 +33,13 @@ public class AuthController {
             throw new RuntimeException("Invalid credentials");
         }
 
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw new RuntimeException("Account not approved yet");
+        }
         String token = jwtService.generateToken(user.getEmail());
 
         return new AuthResponse(token);
     }
-
 
 
 
@@ -47,6 +50,11 @@ public class AuthController {
 
         if (user.getRole() == null) {
             user.setRole(Role.WORKSHOP);
+        }
+
+        // IMPORTANT: enforce status
+        if (user.getStatus() == null) {
+            user.setStatus(UserStatus.PENDING);
         }
 
         return userRepository.save(user);
