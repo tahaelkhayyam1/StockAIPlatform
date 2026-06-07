@@ -4,41 +4,60 @@ import { getStockOverview } from "../api/stock";
 export default function StockTable() {
   const [stocks, setStocks] = useState([]);
   const [search, setSearch] = useState("");
-const [onlyLowStock, setOnlyLowStock] = useState(false);
+  const [onlyLowStock, setOnlyLowStock] = useState(false);
+
   useEffect(() => {
     loadStock();
   }, []);
 
   const loadStock = async () => {
     const data = await getStockOverview();
-    setStocks(data);
+    setStocks(data || []);
   };
 
   const filteredStocks = stocks
-  .filter(item =>
-    item.name.toLowerCase().includes(search.toLowerCase()) ||
-    item.reference.toLowerCase().includes(search.toLowerCase())
-  )
-  .filter(item =>
-    onlyLowStock ? item.lowStock : true
-  );
+    .filter((item) => {
+      const keyword = search.toLowerCase();
+      return (
+        item?.name?.toLowerCase().includes(keyword) ||
+        item?.reference?.toLowerCase().includes(keyword)
+      );
+    })
+    .filter((item) => (onlyLowStock ? item.lowStock : true));
 
   return (
     <div className="bg-white rounded-xl shadow p-6">
+      
+      {/* HEADER */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-semibold">Stock Overview</h2>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* SEARCH + FILTER (FIXED POSITION) */}
+      <div className="mb-4 space-y-3">
+        
         <input
           type="text"
           placeholder="Search piece..."
-          className="border p-2 rounded w-full mb-4"
+          className="border p-2 rounded w-full"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
 
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={onlyLowStock}
+            onChange={(e) => setOnlyLowStock(e.target.checked)}
+          />
+          Show only low stock
+        </label>
+      </div>
+
+      {/* TABLE */}
+      <div className="overflow-x-auto">
         <table className="w-full border-collapse">
+          
           <thead>
             <tr className="border-b text-left text-gray-500">
               <th className="p-3">Reference</th>
@@ -48,17 +67,13 @@ const [onlyLowStock, setOnlyLowStock] = useState(false);
               <th className="p-3">Status</th>
             </tr>
           </thead>
-<label className="flex items-center gap-2 mb-4">
-  <input
-    type="checkbox"
-    checked={onlyLowStock}
-    onChange={(e) => setOnlyLowStock(e.target.checked)}
-  />
-  Show only low stock
-</label>
+
           <tbody>
             {filteredStocks.map((item) => (
-              <tr key={item.pieceId} className="border-b hover:bg-gray-50">
+              <tr
+                key={item.pieceId}
+                className="border-b hover:bg-gray-50"
+              >
                 <td className="p-3 font-medium">{item.reference}</td>
                 <td className="p-3">{item.name}</td>
                 <td className="p-3">{item.currentStock}</td>
@@ -77,6 +92,7 @@ const [onlyLowStock, setOnlyLowStock] = useState(false);
               </tr>
             ))}
           </tbody>
+
         </table>
       </div>
     </div>
