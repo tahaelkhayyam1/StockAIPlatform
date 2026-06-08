@@ -163,4 +163,27 @@ public class StockService {
                 .toList();
     }
 
-}
+
+
+    public List<StockOverviewDTO> getStockOverviewByOwner(User user) {
+
+        return pieceRepo.findAll()
+                .stream()
+                .filter(piece -> piece.getOwner() != null)
+                .filter(piece -> piece.getOwner().getId().equals(user.getId()))
+                .map(piece -> {
+
+                    int stock = getStock(piece.getId());
+
+                    return new StockOverviewDTO(
+                            piece.getId(),
+                            piece.getReference(),
+                            piece.getName(),
+                            stock,
+                            piece.getMinimumStock(),
+                            stock < piece.getMinimumStock()
+                    );
+                })
+                .toList();
+    }
+ }

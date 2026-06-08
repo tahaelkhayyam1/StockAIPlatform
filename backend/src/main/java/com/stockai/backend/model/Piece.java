@@ -10,7 +10,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Piece {
-
+    @ManyToOne
+    private User owner;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

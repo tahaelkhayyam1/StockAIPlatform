@@ -3,6 +3,8 @@ package com.stockai.backend.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -33,4 +35,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserStatus status = UserStatus.PENDING;
+
+    private Boolean approved = false;
+    private Boolean active = false;
+    private Boolean archived = false;
+    private LocalDateTime lastLogin;
 }

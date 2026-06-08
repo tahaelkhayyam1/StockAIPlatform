@@ -33,12 +33,27 @@ public class AuthController {
             throw new RuntimeException("Invalid credentials");
         }
 
-        if (user.getStatus() != UserStatus.ACTIVE) {
-            throw new RuntimeException("Account not approved yet");
+        if (Boolean.TRUE.equals(user.getArchived())) {
+            throw new RuntimeException("Account archived");
         }
+
+        if (!Boolean.TRUE.equals(user.getApproved())) {
+            throw new RuntimeException("Account not approved");
+        }
+
+        if (!Boolean.TRUE.equals(user.getActive())) {
+            throw new RuntimeException("Account disabled");
+        }
+        user.setLastLogin(java.time.LocalDateTime.now());
+        userRepository.save(user);
         String token = jwtService.generateToken(user.getEmail());
 
-        return new AuthResponse(token);
+        return new AuthResponse(
+                token,
+                user.getRole().name(),
+                user.getEmail(),
+                user.getId()
+        );
     }
 
 
@@ -52,10 +67,10 @@ public class AuthController {
             user.setRole(Role.WORKSHOP);
         }
 
-        // IMPORTANT: enforce status
-        if (user.getStatus() == null) {
-            user.setStatus(UserStatus.PENDING);
-        }
+        user.setStatus(UserStatus.PENDING);
+        user.setApproved(false);
+        user.setActive(false);
+        user.setArchived(false);
 
         return userRepository.save(user);
     }
