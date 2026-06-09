@@ -14,6 +14,18 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: "tahaelkhayyam1@gmail.com"
+    password: "ruuz vdpu xpnz lqmv"
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 logging:
   level:
     org.springframework.jdbc: DEBUG

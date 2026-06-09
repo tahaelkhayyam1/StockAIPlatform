@@ -49,4 +49,25 @@ public class ImageController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @PostMapping("/upload")
+    public ResponseEntity<java.util.Map<String, String>> uploadImage(@RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body(java.util.Map.of("error", "Please select a file to upload."));
+            }
+
+            String originalFileName = org.springframework.util.StringUtils.cleanPath(file.getOriginalFilename());
+            String fileName = java.util.UUID.randomUUID().toString() + "_" + originalFileName;
+
+            Path targetLocation = this.imageStorageLocation.resolve(fileName);
+            Files.copy(file.getInputStream(), targetLocation, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+            String fileUrl = "/api/images/" + fileName;
+
+            return ResponseEntity.ok(java.util.Map.of("url", fileUrl));
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().body(java.util.Map.of("error", "Could not store file. Please try again!"));
+        }
+    }
 }

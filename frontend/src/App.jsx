@@ -25,6 +25,14 @@ import SuperAdminLayout from "./layouts/SuperAdminLayout";
 import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard";
 import SuperAdminUsers from "./pages/superadmin/SuperAdminUsers";
 import AuditLogs from "./pages/superadmin/AuditLogs";
+import SuperAdminSupport from "./pages/superadmin/SuperAdminSupport";
+
+import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+
+import WorkshopLayout from "./layouts/WorkshopLayout";
+import UserProfile from "./pages/UserProfile";
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -35,7 +43,19 @@ export default function App() {
 
         {/* AUTH */}
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
+
+        {/* SHARED AUTHENTICATED ROUTES */}
+        <Route
+            path="/profile"
+            element={
+                <ProtectedRoute role={["SUPER_ADMIN", "ADMIN", "WORKSHOP", "MANAGER", "SUPPLIER"]}>
+                    <UserProfile />
+                </ProtectedRoute>
+            }
+        />
 
         {/* ADMIN (LAYOUT WRAPPED ROUTES) */}
         <Route
@@ -72,6 +92,7 @@ export default function App() {
           <Route index element={<SuperAdminDashboard />} />
           <Route path="users" element={<SuperAdminUsers />} />
           <Route path="audit" element={<AuditLogs />} />
+          <Route path="support" element={<SuperAdminSupport />} />
         </Route>
 
         {/* WORKSHOP */}
@@ -79,10 +100,12 @@ export default function App() {
           path="/workshop"
           element={
             <ProtectedRoute role="WORKSHOP">
-              <WorkshopDashboard />
+              <WorkshopLayout />
             </ProtectedRoute>
           }
-        />
+        >
+            <Route index element={<WorkshopDashboard />} />
+        </Route>
 
       </Routes>
     </BrowserRouter>

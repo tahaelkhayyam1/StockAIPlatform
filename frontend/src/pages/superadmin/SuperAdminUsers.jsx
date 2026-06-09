@@ -139,7 +139,20 @@ export default function SuperAdminUsers() {
 
   const handleCreateUser = async (formData) => {
     try {
-      await axios.post("http://localhost:8080/api/admin/users", formData, { headers });
+      let profilePictureUrl = null;
+      if (formData.profilePictureFile) {
+          const uploadData = new FormData();
+          uploadData.append("file", formData.profilePictureFile);
+          const uploadRes = await axios.post("http://localhost:8080/api/images/upload", uploadData, {
+              headers: { 'Content-Type': 'multipart/form-data', ...headers }
+          });
+          profilePictureUrl = uploadRes.data.url;
+      }
+
+      const payload = { ...formData, profilePicture: profilePictureUrl };
+      delete payload.profilePictureFile; // remove the file object before sending JSON
+
+      await axios.post("http://localhost:8080/api/admin/users", payload, { headers });
       setCreateModalOpen(false);
       showToast("User provisioned successfully.");
       loadUsers();

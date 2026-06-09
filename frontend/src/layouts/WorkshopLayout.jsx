@@ -1,23 +1,20 @@
 import { Link, useLocation } from "react-router-dom";
 import SharedLayout from "./SharedLayout";
 
-export default function SuperAdminLayout() {
+export default function WorkshopLayout() {
   const location = useLocation();
 
   const navItems = [
-    { name: "Dashboard", path: "/superadmin" },
-    { name: "Users", path: "/superadmin/users" },
-    { name: "Audit Logs", path: "/superadmin/audit" },
-    { name: "Support Requests", path: "/superadmin/support" }
+    { name: "Workshop Dashboard", path: "/workshop" },
   ];
 
   return (
     <SharedLayout 
-        portalName="Super Admin Portal"
+        portalName="Workshop Portal"
         sidebarContent={
             <>
                 {navItems.map((item) => {
-                    const isActive = location.pathname === item.path || (item.path !== '/superadmin' && location.pathname.startsWith(item.path));
+                    const isActive = location.pathname === item.path || (item.path !== '/workshop' && location.pathname.startsWith(item.path));
                     return (
                         <Link
                             key={item.name}

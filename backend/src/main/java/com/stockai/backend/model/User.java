@@ -40,4 +40,12 @@ public class User {
     private Boolean active = false;
     private Boolean archived = false;
     private LocalDateTime lastLogin;
+
+    // 2FA Fields
+    private String twoFactorCode;
+    private LocalDateTime twoFactorExpiry;
+    private String trustedDeviceId;
+
+    // Profile
+    private String profilePicture;
 }
