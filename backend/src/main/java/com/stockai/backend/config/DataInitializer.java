@@ -19,6 +19,9 @@ public class DataInitializer implements CommandLineRunner {
     private final WorkshopRequestRepository workshopRequestRepository;
     private final WorkshopRepository workshopRepository;
     private final ConsumptionHistoryRepository consumptionHistoryRepository;
+    private final ClientRepository clientRepository;
+    private final ClientOrderRepository clientOrderRepository;
+    private final ClientDevisRepository clientDevisRepository;
     private final StockService stockService;
     private final JdbcTemplate jdbcTemplate;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -30,6 +33,9 @@ public class DataInitializer implements CommandLineRunner {
                            WorkshopRequestRepository workshopRequestRepository,
                            WorkshopRepository workshopRepository,
                            ConsumptionHistoryRepository consumptionHistoryRepository,
+                           ClientRepository clientRepository,
+                           ClientOrderRepository clientOrderRepository,
+                           ClientDevisRepository clientDevisRepository,
                            StockService stockService,
                            JdbcTemplate jdbcTemplate) {
         this.userRepository = userRepository;
@@ -39,6 +45,9 @@ public class DataInitializer implements CommandLineRunner {
         this.workshopRequestRepository = workshopRequestRepository;
         this.workshopRepository = workshopRepository;
         this.consumptionHistoryRepository = consumptionHistoryRepository;
+        this.clientRepository = clientRepository;
+        this.clientOrderRepository = clientOrderRepository;
+        this.clientDevisRepository = clientDevisRepository;
         this.stockService = stockService;
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -66,10 +75,21 @@ public class DataInitializer implements CommandLineRunner {
         Supplier autozone = createSupplier("AutoZone Wholesale", "wholesale@autozone.com", "555-0202", 85.0, 5);
 
         // 3. Seed Pieces
-        Piece brakePad = createPiece("BRK-001", "Ceramic Brake Pad", "Brakes", "HIGH", 50, admin);
-        Piece oilFilter = createPiece("OIL-F-V8", "V8 Synthetic Oil Filter", "Engine", "MEDIUM", 100, admin);
-        Piece sparkPlug = createPiece("SPK-P-02", "Iridium Spark Plug", "Ignition", "LOW", 200, admin);
-        Piece battery = createPiece("BAT-12V", "12V Car Battery", "Electrical", "HIGH", 20, admin);
+        Piece brakePad = createPiece("BRK-001", "Ceramic Brake Pad", "Brakes", "HIGH", 50, admin, 
+            "High-performance ceramic brake pad designed for heavy duty commercial use. Lasts 30% longer than standard pads.", 
+            "https://images.unsplash.com/photo-1629824647311-6677f50228d4?w=500&auto=format&fit=crop&q=60", "BAR-00010101");
+            
+        Piece oilFilter = createPiece("OIL-F-V8", "V8 Synthetic Oil Filter", "Engine", "MEDIUM", 100, admin,
+            "Premium synthetic oil filter for V8 engines. Ensures maximum dirt trapping and optimal oil flow.",
+            "https://images.unsplash.com/photo-1635773054043-42e729a6e0fb?w=500&auto=format&fit=crop&q=60", "BAR-00010102");
+            
+        Piece sparkPlug = createPiece("SPK-P-02", "Iridium Spark Plug", "Ignition", "LOW", 200, admin,
+            "Laser iridium spark plug providing superior ignitability and long service life. Pre-gapped.",
+            "https://plus.unsplash.com/premium_photo-1682126207191-2a54b38d3ab9?w=500&auto=format&fit=crop&q=60", "BAR-00010103");
+            
+        Piece battery = createPiece("BAT-12V", "12V Car Battery", "Electrical", "HIGH", 20, admin,
+            "Heavy duty 12V 750 CCA car battery. Built to withstand extreme temperatures and vibrations.",
+            "https://images.unsplash.com/photo-1610014819777-628d0551061f?w=500&auto=format&fit=crop&q=60", "BAR-00010104");
 
         // 4. Link Pieces to Suppliers (SupplierParts)
         createSupplierPart(bosch, brakePad, 45.00, 2, 20);
@@ -96,6 +116,14 @@ public class DataInitializer implements CommandLineRunner {
         createConsumptionHistory(brakePad, mainWorkshop, 2, LocalDateTime.now().minusDays(5));
         createConsumptionHistory(oilFilter, mainWorkshop, 5, LocalDateTime.now().minusDays(2));
         createConsumptionHistory(battery, bodyShop, 1, LocalDateTime.now().minusDays(10));
+        
+        // 8. Seed Clients
+        Client acmeCorp = createClient("ACME Logistics", "logistics@acme.com", "555-8888", "ACME Corp", "123 Industrial Parkway");
+        Client globalFreight = createClient("Global Freight", "ops@globalfreight.com", "555-9999", "Global Freight Ltd", "456 Commerce Blvd");
+
+        // 9. Seed Client Orders and Devis
+        createClientOrder(acmeCorp, brakePad, 10, 850.0, ClientOrder.OrderStatus.PENDING);
+        createClientDevis(globalFreight, battery, 5, 750.0, ClientDevis.DevisStatus.DRAFT);
     }
 
     private User createUser(String username, String email, Role role) {
@@ -122,7 +150,7 @@ public class DataInitializer implements CommandLineRunner {
         return supplierRepository.save(s);
     }
 
-    private Piece createPiece(String ref, String name, String category, String criticality, int minStock, User owner) {
+    private Piece createPiece(String ref, String name, String category, String criticality, int minStock, User owner, String desc, String img, String barcode) {
         Piece p = new Piece();
         p.setReference(ref);
         p.setName(name);
@@ -130,6 +158,9 @@ public class DataInitializer implements CommandLineRunner {
         p.setCriticality(criticality);
         p.setMinimumStock(minStock);
         p.setOwner(owner);
+        p.setDescription(desc);
+        p.setImageUrl(img);
+        p.setBarcode(barcode);
         return pieceRepository.save(p);
     }
 
@@ -166,5 +197,35 @@ public class DataInitializer implements CommandLineRunner {
         ch.setQuantity(qty);
         ch.setDate(date);
         consumptionHistoryRepository.save(ch);
+    }
+
+    private Client createClient(String name, String email, String phone, String company, String address) {
+        Client c = new Client();
+        c.setName(name);
+        c.setEmail(email);
+        c.setPhone(phone);
+        c.setCompany(company);
+        c.setAddress(address);
+        return clientRepository.save(c);
+    }
+
+    private void createClientOrder(Client c, Piece p, int qty, double price, ClientOrder.OrderStatus status) {
+        ClientOrder co = new ClientOrder();
+        co.setClient(c);
+        co.setPiece(p);
+        co.setQuantity(qty);
+        co.setPrice(price);
+        co.setStatus(status);
+        clientOrderRepository.save(co);
+    }
+
+    private void createClientDevis(Client c, Piece p, int qty, double price, ClientDevis.DevisStatus status) {
+        ClientDevis cd = new ClientDevis();
+        cd.setClient(c);
+        cd.setPiece(p);
+        cd.setQuantity(qty);
+        cd.setEstimatedPrice(price);
+        cd.setStatus(status);
+        clientDevisRepository.save(cd);
     }
 }

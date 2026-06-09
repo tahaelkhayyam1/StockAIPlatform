@@ -30,7 +30,7 @@ export default function AdminLayout() {
     navigate("/login");
   };
 
-  const navItems = [
+  const inventoryItems = [
     { name: "Dashboard", path: "/admin" },
     { name: "Pieces", path: "/admin/pieces" },
     { name: "Receive Stock", path: "/admin/entry" },
@@ -42,6 +42,36 @@ export default function AdminLayout() {
     { name: "AI Recommendations", path: "/admin/recommendations" }
   ];
 
+  const salesItems = [
+    { name: "Clients", path: "/admin/clients" },
+    { name: "Quotes (Devis)", path: "/admin/client-devis" },
+    { name: "Client Orders", path: "/admin/client-orders" }
+  ];
+
+  const renderNavItems = (items) => {
+      return items.map((item) => {
+        const isActive = location.pathname === item.path || (item.path !== '/admin' && location.pathname.startsWith(item.path));
+        return (
+          <Link
+            key={item.name}
+            to={item.path}
+            className={`flex items-center justify-between px-3 py-2.5 rounded-lg transition-all ${
+              isActive
+                ? "bg-indigo-600 text-white shadow-md shadow-indigo-900/20"
+                : "text-slate-300 hover:bg-slate-800 hover:text-white"
+            }`}
+          >
+            <span className="font-medium text-sm">{item.name}</span>
+            {item.name === "Workshop Requests" && pendingCount > 0 && (
+                <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full animate-pulse shadow-sm">
+                    {pendingCount}
+                </span>
+            )}
+          </Link>
+        );
+      });
+  };
+
   return (
     <div className="flex min-h-screen bg-slate-50">
       {/* Sidebar */}
@@ -52,28 +82,18 @@ export default function AdminLayout() {
           </h1>
         </div>
 
-        <nav className="flex-1 py-6 px-3 space-y-1">
-          {navItems.map((item) => {
-            const isActive = location.pathname === item.path || (item.path !== '/admin' && location.pathname.startsWith(item.path));
-            return (
-              <Link
-                key={item.name}
-                to={item.path}
-                className={`flex items-center justify-between px-3 py-2.5 rounded-lg transition-all ${
-                  isActive
-                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-900/20"
-                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
-                }`}
-              >
-                <span className="font-medium text-sm">{item.name}</span>
-                {item.name === "Workshop Requests" && pendingCount > 0 && (
-                    <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full animate-pulse shadow-sm">
-                        {pendingCount}
-                    </span>
-                )}
-              </Link>
-            );
-          })}
+        <nav className="flex-1 py-6 px-3 space-y-6 overflow-y-auto">
+          
+          <div className="space-y-1">
+            <p className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Inventory</p>
+            {renderNavItems(inventoryItems)}
+          </div>
+
+          <div className="space-y-1">
+            <p className="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Sales & Clients</p>
+            {renderNavItems(salesItems)}
+          </div>
+
         </nav>
 
         <div className="p-4 border-t border-white/10">

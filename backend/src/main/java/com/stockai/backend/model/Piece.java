@@ -27,6 +27,13 @@ public class Piece {
 
     private Integer minimumStock;
 
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    private String imageUrl;
+
+    private String barcode;
+
     @OneToMany(mappedBy = "piece")
     @JsonIgnore
     private List<StockMovement> movements;
