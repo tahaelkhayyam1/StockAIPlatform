@@ -30,6 +30,9 @@ public class PasswordResetController {
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    @Autowired
+    private com.stockai.backend.service.NotificationService notificationService;
+
     @PostMapping("/auth/forgot-password")
     public String requestPasswordReset(@RequestBody Map<String, String> payload) {
         String email = payload.get("email");
@@ -41,6 +44,8 @@ public class PasswordResetController {
         PasswordResetRequest request = new PasswordResetRequest();
         request.setEmail(email);
         resetRepository.save(request);
+
+        notificationService.notifyRole(com.stockai.backend.model.Role.SUPER_ADMIN, "Password reset requested for " + email);
 
         return "Request submitted successfully";
     }

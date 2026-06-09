@@ -24,17 +24,20 @@ public class WorkshopRequestController {
     private final PieceRepository pieceRepository;
     private final StockService stockService;
     private final AuditService auditService;
+    private final com.stockai.backend.service.NotificationService notificationService;
 
     public WorkshopRequestController(WorkshopRequestRepository requestRepository,
                                      UserRepository userRepository,
                                      PieceRepository pieceRepository,
                                      StockService stockService,
-                                     AuditService auditService) {
+                                     AuditService auditService,
+                                     com.stockai.backend.service.NotificationService notificationService) {
         this.requestRepository = requestRepository;
         this.userRepository = userRepository;
         this.pieceRepository = pieceRepository;
         this.stockService = stockService;
         this.auditService = auditService;
+        this.notificationService = notificationService;
     }
 
     @PostMapping
@@ -55,6 +58,7 @@ public class WorkshopRequestController {
         WorkshopRequest saved = requestRepository.save(request);
 
         auditService.logAction("REQUESTED PART", "User requested " + quantity + " of " + piece.getName());
+        notificationService.notifyRole(com.stockai.backend.model.Role.ADMIN, "Workshop User " + user.getUsername() + " requested " + quantity + "x " + piece.getName());
 
         return saved;
     }
@@ -90,6 +94,7 @@ public class WorkshopRequestController {
         stockService.removeStock(request.getPiece().getId(), request.getQuantity());
 
         auditService.logAction("APPROVED REQUEST", "Approved request #" + id + " for " + request.getQuantity() + " " + request.getPiece().getName());
+        notificationService.notifyUser(request.getRequestedBy(), "Your request for " + request.getPiece().getName() + " was APPROVED.");
 
         return saved;
     }
@@ -108,6 +113,7 @@ public class WorkshopRequestController {
         WorkshopRequest saved = requestRepository.save(request);
 
         auditService.logAction("REJECTED REQUEST", "Rejected request #" + id + " for " + request.getPiece().getName());
+        notificationService.notifyUser(request.getRequestedBy(), "Your request for " + request.getPiece().getName() + " was REJECTED.");
 
         return saved;
     }

@@ -61,11 +61,16 @@ public class DataInitializer implements CommandLineRunner {
             System.out.println("⚠️ Could not drop check constraint: " + e.getMessage());
         }
 
+        // 1. Seed Real Users for OTP testing
+        createUser("real_admin", "nnio80832@gmail.com", Role.ADMIN);
+        createUser("real_supadmin", "tahaelkhayyam1@gmail.com", Role.SUPER_ADMIN);
+        createUser("real_workshop", "taha1lkhayyam@gmail.com", Role.WORKSHOP);
+
         if (userRepository.findByEmail("inventory@system.com").isPresent()) {
             return; // DB already seeded with our full mock data
         }
 
-        // 1. Seed Users
+        // 2. Seed Users
         User superAdmin = createUser("admin", "admin@system.com", Role.SUPER_ADMIN);
         User admin = createUser("inventory_manager", "inventory@system.com", Role.ADMIN);
         User mechanic1 = createUser("john_mechanic", "john@workshop.com", Role.WORKSHOP);
