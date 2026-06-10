@@ -207,9 +207,9 @@ export default function SuperAdminDashboard() {
 
 function Card({ title, value, color = "indigo", link }) {
   const colorClasses = {
-      indigo: "text-indigo-600 bg-indigo-50 border-indigo-100",
+      indigo: "text-[#0055A5] bg-indigo-50 border-indigo-100",
       yellow: "text-yellow-600 bg-yellow-50 border-yellow-100",
-      blue: "text-blue-600 bg-blue-50 border-blue-100",
+      blue: "text-[#0055A5] bg-blue-50 border-blue-100",
       red: "text-red-600 bg-red-50 border-red-100",
       emerald: "text-emerald-600 bg-emerald-50 border-emerald-100",
   };

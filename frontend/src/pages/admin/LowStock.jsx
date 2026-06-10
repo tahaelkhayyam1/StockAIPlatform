@@ -1,10 +1,26 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { getToken } from "../../auth/auth";
+import useTablePagination from "../../hooks/useTablePagination";
+import TableSearch from "../../components/ui/TableSearch";
+import TablePagination from "../../components/ui/TablePagination";
+
 const API = "http://localhost:8080/api";
 
 export default function LowStock() {
   const [data, setData] = useState([]);
+
+  const {
+      currentData: paginatedData,
+      searchQuery,
+      setSearchQuery,
+      currentPage,
+      setCurrentPage,
+      totalPages,
+      rowsPerPage,
+      setRowsPerPage,
+      totalElements
+  } = useTablePagination(data, ['reference', 'name'], 10);
 
   useEffect(() => {
     loadLowStock();
@@ -28,6 +44,13 @@ export default function LowStock() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <TableSearch 
+            searchQuery={searchQuery} 
+            setSearchQuery={setSearchQuery} 
+            placeholder="Search low stock by ref or name..."
+            rowsPerPage={rowsPerPage}
+            setRowsPerPage={setRowsPerPage}
+        />
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -53,7 +76,7 @@ export default function LowStock() {
                   </td>
                 </tr>
               ) : (
-                data.map((item) => (
+                paginatedData.map((item) => (
                   <tr key={item.pieceId} className="hover:bg-red-50/50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.reference}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.name}</td>
@@ -70,6 +93,12 @@ export default function LowStock() {
             </tbody>
           </table>
         </div>
+        <TablePagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            setCurrentPage={setCurrentPage}
+            totalElements={totalElements}
+        />
       </div>
     </div>
   );

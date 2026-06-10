@@ -48,7 +48,7 @@ export default function AdminDashboard() {
         <div className="flex gap-3">
             <Link 
                 to="/admin/recommendations" 
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 transition-colors"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-[#0055A5] hover:bg-[#004080] transition-colors"
             >
                 View AI Recommendations
             </Link>
@@ -121,7 +121,7 @@ export default function AdminDashboard() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col mt-8">
         <div className="p-6 border-b border-gray-200 flex justify-between items-center bg-gray-50">
           <h2 className="text-lg font-medium text-gray-900">Current Stock Overview</h2>
-          <Link to="/admin/pieces" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">Manage pieces &rarr;</Link>
+          <Link to="/admin/pieces" className="text-sm font-medium text-[#0055A5] hover:text-indigo-500">Manage pieces &rarr;</Link>
         </div>
         <div className="overflow-x-auto flex-1">
           <table className="min-w-full divide-y divide-gray-200">
@@ -159,10 +159,10 @@ export default function AdminDashboard() {
 
 function Card({ title, value, color = "indigo" }) {
     const colorClasses = {
-        blue: "text-blue-600",
+        blue: "text-[#0055A5]",
         emerald: "text-emerald-600",
         red: "text-red-600",
-        indigo: "text-indigo-600",
+        indigo: "text-[#0055A5]",
     };
 
     return (

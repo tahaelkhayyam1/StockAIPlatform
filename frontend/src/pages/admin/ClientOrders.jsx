@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { getToken } from "../../auth/auth";
+import useTablePagination from "../../hooks/useTablePagination";
+import TableSearch from "../../components/ui/TableSearch";
+import TablePagination from "../../components/ui/TablePagination";
 
 const API = "http://localhost:8080/api/client-orders";
 
@@ -14,6 +17,18 @@ export default function ClientOrders() {
   const [formData, setFormData] = useState({ clientId: "", pieceId: "", quantity: 1, price: "" });
 
   const headers = { Authorization: `Bearer ${getToken()}` };
+
+  const {
+      currentData: paginatedOrders,
+      searchQuery,
+      setSearchQuery,
+      currentPage,
+      setCurrentPage,
+      totalPages,
+      rowsPerPage,
+      setRowsPerPage,
+      totalElements
+  } = useTablePagination(orders, ['id', 'client.name', 'piece.name', 'status'], 12);
 
   useEffect(() => {
     loadOrders();
@@ -86,13 +101,23 @@ export default function ClientOrders() {
             <h1 className="text-2xl font-bold text-gray-900">Client Orders</h1>
             <p className="text-gray-500 text-sm mt-1">Manage external orders and deductions.</p>
         </div>
-        <button onClick={() => setShowModal(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-medium transition-colors shadow-sm">
+        <button onClick={() => setShowModal(true)} className="bg-[#0055A5] hover:bg-[#004080] text-white px-4 py-2 rounded-xl font-medium transition-colors shadow-sm">
             + Create Order
         </button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {orders.map(o => (
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6">
+        <TableSearch 
+            searchQuery={searchQuery} 
+            setSearchQuery={setSearchQuery} 
+            placeholder="Search orders by ID, client, piece, or status..."
+            rowsPerPage={rowsPerPage}
+            setRowsPerPage={setRowsPerPage}
+        />
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
+          {paginatedOrders.map(o => (
               <div key={o.id} className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
                   <div className="flex justify-between items-start mb-4">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
@@ -115,19 +140,19 @@ export default function ClientOrders() {
                       </div>
                       <div className="text-right">
                           <p className="text-xs text-gray-500">Qty</p>
-                          <p className="font-bold text-indigo-600 text-lg">{o.quantity}</p>
+                          <p className="font-bold text-[#0055A5] text-lg">{o.quantity}</p>
                       </div>
                   </div>
 
                   <div className="flex gap-2 flex-wrap mt-4 pt-4 border-t border-gray-100">
                       {o.status === 'PENDING' && (
                           <>
-                              <button onClick={() => handleAction(o.id, 'approve')} className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">Approve</button>
+                              <button onClick={() => handleAction(o.id, 'approve')} className="flex-1 bg-[#0055A5] hover:bg-[#004080] text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">Approve</button>
                               <button onClick={() => handleAction(o.id, 'cancel')} className="flex-1 bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">Cancel</button>
                           </>
                       )}
                       {o.status === 'APPROVED' && (
-                          <button onClick={() => handleAction(o.id, 'ship')} className="w-full bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">Mark Shipped</button>
+                          <button onClick={() => handleAction(o.id, 'ship')} className="w-full bg-[#0055A5] hover:bg-[#004080] text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">Mark Shipped</button>
                       )}
                       {(o.status === 'CANCELLED' || o.status === 'DELIVERED') && (
                           <button onClick={() => deleteOrder(o.id)} className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">Delete Record</button>
@@ -135,12 +160,21 @@ export default function ClientOrders() {
                   </div>
               </div>
           ))}
-          {orders.length === 0 && !isLoading && (
+          {paginatedOrders.length === 0 && !isLoading && (
               <div className="col-span-full bg-white rounded-2xl shadow-sm border border-gray-100 p-16 text-center">
                   <h3 className="text-xl font-bold text-gray-900 mb-1">No Client Orders</h3>
-                  <p className="text-gray-500 text-sm">No orders have been created yet.</p>
+                  <p className="text-gray-500 text-sm">No orders have been found matching your search.</p>
               </div>
           )}
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6">
+          <TablePagination 
+              currentPage={currentPage}
+              totalPages={totalPages}
+              setCurrentPage={setCurrentPage}
+              totalElements={totalElements}
+          />
       </div>
 
       {showModal && (
@@ -150,14 +184,14 @@ export default function ClientOrders() {
                   <form onSubmit={handleCreate} className="space-y-4">
                       <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Client *</label>
-                          <select required value={formData.clientId} onChange={e => setFormData({...formData, clientId: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
+                          <select required value={formData.clientId} onChange={e => setFormData({...formData, clientId: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-[#0055A5] outline-none bg-white">
                               <option value="">Select a client...</option>
                               {clients.map(c => <option key={c.id} value={c.id}>{c.name} ({c.company})</option>)}
                           </select>
                       </div>
                       <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Piece (Catalog Item) *</label>
-                          <select required value={formData.pieceId} onChange={e => setFormData({...formData, pieceId: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
+                          <select required value={formData.pieceId} onChange={e => setFormData({...formData, pieceId: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-[#0055A5] outline-none bg-white">
                               <option value="">Select a piece...</option>
                               {pieces.map(p => <option key={p.id} value={p.id}>{p.name} (Ref: {p.reference})</option>)}
                           </select>
@@ -165,17 +199,17 @@ export default function ClientOrders() {
                       <div className="flex gap-4">
                           <div className="flex-1">
                               <label className="block text-sm font-medium text-gray-700 mb-1">Quantity *</label>
-                              <input required type="number" min="1" value={formData.quantity} onChange={e => setFormData({...formData, quantity: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none" />
+                              <input required type="number" min="1" value={formData.quantity} onChange={e => setFormData({...formData, quantity: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-[#0055A5] outline-none" />
                           </div>
                           <div className="flex-1">
                               <label className="block text-sm font-medium text-gray-700 mb-1">Total Price ($)</label>
-                              <input type="number" step="0.01" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none" />
+                              <input type="number" step="0.01" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-[#0055A5] outline-none" />
                           </div>
                       </div>
                       
                       <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                           <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">Cancel</button>
-                          <button type="submit" className="px-4 py-2 font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg">Create Order</button>
+                          <button type="submit" className="px-4 py-2 font-semibold text-white bg-[#0055A5] hover:bg-[#004080] rounded-lg">Create Order</button>
                       </div>
                   </form>
               </div>

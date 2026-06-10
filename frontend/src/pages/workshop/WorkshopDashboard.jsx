@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { getToken, logout } from "../../auth/auth";
 import { useNavigate } from "react-router-dom";
+import useTablePagination from "../../hooks/useTablePagination";
+import TableSearch from "../../components/ui/TableSearch";
+import TablePagination from "../../components/ui/TablePagination";
 
 const PIECES_API = "http://localhost:8080/api/pieces";
 const REQUESTS_API = "http://localhost:8080/api/requests";
@@ -11,6 +14,18 @@ export default function WorkshopDashboard() {
   const [pieces, setPieces] = useState([]);
   const [myRequests, setMyRequests] = useState([]);
   const [search, setSearch] = useState("");
+
+  const {
+      currentData: paginatedRequests,
+      searchQuery: requestSearch,
+      setSearchQuery: setRequestSearch,
+      currentPage,
+      setCurrentPage,
+      totalPages,
+      rowsPerPage,
+      setRowsPerPage,
+      totalElements
+  } = useTablePagination(myRequests, ['piece.name', 'piece.reference', 'status'], 5);
   
   // Cart state: Array of { piece, quantity }
   const [cart, setCart] = useState([]);
@@ -101,13 +116,13 @@ export default function WorkshopDashboard() {
       <header className="bg-white/80 backdrop-blur-md text-gray-900 border-b border-gray-200 sticky top-0 z-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                  <div className="bg-indigo-600 text-white p-1.5 rounded-lg shadow-sm">
+                  <div className="bg-[#0055A5] text-white p-1.5 rounded-lg shadow-sm">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                   </div>
                   <h1 className="text-xl font-bold tracking-tight">Workshop Portal</h1>
               </div>
               <div className="flex items-center gap-6">
-                  <button onClick={() => setIsCartOpen(true)} className="relative p-2 text-gray-500 hover:text-indigo-600 transition-colors group">
+                  <button onClick={() => setIsCartOpen(true)} className="relative p-2 text-gray-500 hover:text-[#0055A5] transition-colors group">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                       {cart.length > 0 && (
                           <span className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white">
@@ -137,7 +152,7 @@ export default function WorkshopDashboard() {
                         placeholder="Search by name, SKU, or category..." 
                         value={search}
                         onChange={e => setSearch(e.target.value)}
-                        className="pl-11 pr-4 py-2.5 border-gray-300 bg-white rounded-xl shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-full md:w-80 text-sm transition-all"
+                        className="pl-11 pr-4 py-2.5 border-gray-300 bg-white rounded-xl shadow-sm focus:ring-2 focus:ring-[#0055A5] focus:border-[#0055A5] w-full md:w-80 text-sm transition-all"
                     />
                     <svg className="w-5 h-5 text-gray-400 absolute left-4 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                 </div>
@@ -172,7 +187,7 @@ export default function WorkshopDashboard() {
                               </div>
                               <button 
                                   onClick={(e) => addToCart(piece, e)}
-                                  className="w-full mt-4 bg-gray-50 hover:bg-indigo-600 text-gray-700 hover:text-white font-semibold py-2.5 rounded-xl transition-all text-sm flex items-center justify-center gap-2 border border-gray-200 hover:border-indigo-600 active:scale-95"
+                                  className="w-full mt-4 bg-gray-50 hover:bg-[#0055A5] text-gray-700 hover:text-white font-semibold py-2.5 rounded-xl transition-all text-sm flex items-center justify-center gap-2 border border-gray-200 hover:border-[#0055A5] active:scale-95"
                               >
                                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                                   Add to Request
@@ -193,6 +208,13 @@ export default function WorkshopDashboard() {
           <section className="pt-8 border-t border-gray-200">
               <h2 className="text-xl font-bold text-gray-900 mb-4 tracking-tight">Request History</h2>
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                  <TableSearch 
+                      searchQuery={requestSearch} 
+                      setSearchQuery={setRequestSearch} 
+                      placeholder="Search history by part name, ref, or status..."
+                      rowsPerPage={rowsPerPage}
+                      setRowsPerPage={setRowsPerPage}
+                  />
                   <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-100">
                         <thead className="bg-gray-50/50">
@@ -204,7 +226,7 @@ export default function WorkshopDashboard() {
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-50">
-                            {myRequests.slice().reverse().map(req => (
+                            {paginatedRequests.map(req => (
                                 <tr key={req.id} className="hover:bg-gray-50/30 transition-colors">
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(req.requestDate).toLocaleDateString()}</td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{req.piece.name} <span className="text-gray-400 font-normal ml-1">({req.piece.reference})</span></td>
@@ -220,12 +242,18 @@ export default function WorkshopDashboard() {
                                     </td>
                                 </tr>
                             ))}
-                            {myRequests.length === 0 && (
-                                <tr><td colSpan="4" className="px-6 py-12 text-center text-gray-500">You haven't made any requests yet.</td></tr>
+                            {paginatedRequests.length === 0 && (
+                                <tr><td colSpan="4" className="px-6 py-12 text-center text-gray-500">No requests found.</td></tr>
                             )}
                         </tbody>
                     </table>
                   </div>
+                  <TablePagination 
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      setCurrentPage={setCurrentPage}
+                      totalElements={totalElements}
+                  />
               </div>
           </section>
 
@@ -252,7 +280,7 @@ export default function WorkshopDashboard() {
                   <div className="md:w-1/2 p-8 flex flex-col">
                       <div className="flex justify-between items-start mb-6">
                           <div>
-                              <div className="text-sm font-mono text-indigo-600 mb-1 font-semibold">{selectedPiece.reference}</div>
+                              <div className="text-sm font-mono text-[#0055A5] mb-1 font-semibold">{selectedPiece.reference}</div>
                               <h3 className="text-2xl font-bold text-gray-900 leading-tight">{selectedPiece.name}</h3>
                               <span className="inline-block mt-2 bg-gray-100 text-gray-700 text-xs font-bold px-2.5 py-1 rounded-md border border-gray-200">
                                   {selectedPiece.category}
@@ -284,7 +312,7 @@ export default function WorkshopDashboard() {
 
                           <button 
                               onClick={(e) => { addToCart(selectedPiece, e); setSelectedPiece(null); }}
-                              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-xl transition-all shadow-sm shadow-indigo-600/20 active:scale-95 flex items-center gap-2"
+                              className="bg-[#0055A5] hover:bg-[#004080] text-white font-semibold px-6 py-3 rounded-xl transition-all shadow-sm shadow-indigo-600/20 active:scale-95 flex items-center gap-2"
                           >
                               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                               Add
@@ -305,7 +333,7 @@ export default function WorkshopDashboard() {
               <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-300 border-l border-gray-200">
                   <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 bg-gray-50/50">
                       <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                          <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                          <svg className="w-6 h-6 text-[#0055A5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
                           Request Cart
                       </h2>
                       <button onClick={() => setIsCartOpen(false)} className="p-2 text-gray-400 hover:text-gray-900 transition-colors rounded-full hover:bg-gray-100">
@@ -321,7 +349,7 @@ export default function WorkshopDashboard() {
                               </div>
                               <p className="text-lg font-medium">Your cart is empty</p>
                               <p className="text-sm">Browse the catalog to add parts.</p>
-                              <button onClick={() => setIsCartOpen(false)} className="mt-4 px-6 py-2.5 bg-indigo-50 text-indigo-600 font-medium rounded-xl hover:bg-indigo-100 transition-colors">Start Browsing</button>
+                              <button onClick={() => setIsCartOpen(false)} className="mt-4 px-6 py-2.5 bg-indigo-50 text-[#0055A5] font-medium rounded-xl hover:bg-indigo-100 transition-colors">Start Browsing</button>
                           </div>
                       ) : (
                           cart.map((item) => (
@@ -365,7 +393,7 @@ export default function WorkshopDashboard() {
                           <button 
                               onClick={submitCartRequests} 
                               disabled={isSubmitting}
-                              className={`w-full py-3.5 rounded-xl font-bold text-white shadow-sm transition-all flex justify-center items-center gap-2 ${isSubmitting ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/20 active:scale-95'}`}
+                              className={`w-full py-3.5 rounded-xl font-bold text-white shadow-sm transition-all flex justify-center items-center gap-2 ${isSubmitting ? 'bg-indigo-400 cursor-not-allowed' : 'bg-[#0055A5] hover:bg-[#004080] shadow-indigo-600/20 active:scale-95'}`}
                           >
                               {isSubmitting ? (
                                   <>

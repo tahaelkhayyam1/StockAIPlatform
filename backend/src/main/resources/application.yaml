@@ -26,6 +26,11 @@ spring:
           starttls:
             enable: true
 
+app:
+  security:
+    2fa:
+      enabled: false
+
 logging:
   level:
     org.springframework.jdbc: DEBUG

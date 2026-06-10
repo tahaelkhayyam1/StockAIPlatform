@@ -97,7 +97,7 @@ export default function AIRecommendations() {
                  <div className="bg-gray-50 p-4 border-t border-gray-100 flex justify-between items-center">
                      <div>
                          <p className="text-xs text-gray-500 uppercase font-semibold">Suggested Order</p>
-                         <p className="text-2xl font-black text-indigo-600">+{rec.recommendedQuantity}</p>
+                         <p className="text-2xl font-black text-[#0055A5]">+{rec.recommendedQuantity}</p>
                      </div>
                      <button 
                         onClick={() => {
@@ -111,7 +111,7 @@ export default function AIRecommendations() {
                                 }
                             });
                         }}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-medium shadow-sm transition-colors"
+                        className="bg-[#0055A5] hover:bg-[#004080] text-white px-5 py-2 rounded-lg font-medium shadow-sm transition-colors"
                      >
                          Draft Order
                      </button>

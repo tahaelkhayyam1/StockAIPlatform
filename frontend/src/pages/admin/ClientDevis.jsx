@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { getToken } from "../../auth/auth";
+import useTablePagination from "../../hooks/useTablePagination";
+import TableSearch from "../../components/ui/TableSearch";
+import TablePagination from "../../components/ui/TablePagination";
 
 const API = "http://localhost:8080/api/client-devis";
 
@@ -14,6 +17,18 @@ export default function ClientDevis() {
   const [formData, setFormData] = useState({ clientId: "", pieceId: "", quantity: 1, estimatedPrice: "" });
   
   const headers = { Authorization: `Bearer ${getToken()}` };
+
+  const {
+      currentData: paginatedDevis,
+      searchQuery,
+      setSearchQuery,
+      currentPage,
+      setCurrentPage,
+      totalPages,
+      rowsPerPage,
+      setRowsPerPage,
+      totalElements
+  } = useTablePagination(devis, ['id', 'client.name', 'piece.name', 'status'], 12); // Grid items, better to be multiple of 3
 
   useEffect(() => {
     loadDevis();
@@ -86,13 +101,23 @@ export default function ClientDevis() {
             <h1 className="text-2xl font-bold text-gray-900">Quotes (Devis)</h1>
             <p className="text-gray-500 text-sm mt-1">Manage price estimates for external clients.</p>
         </div>
-        <button onClick={() => setShowModal(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-medium transition-colors shadow-sm">
+        <button onClick={() => setShowModal(true)} className="bg-[#0055A5] hover:bg-[#004080] text-white px-4 py-2 rounded-xl font-medium transition-colors shadow-sm">
             + Create Quote
         </button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {devis.map(d => (
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6">
+        <TableSearch 
+            searchQuery={searchQuery} 
+            setSearchQuery={setSearchQuery} 
+            placeholder="Search quotes by ID, client, piece, or status..."
+            rowsPerPage={rowsPerPage}
+            setRowsPerPage={setRowsPerPage}
+        />
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6">
+          {paginatedDevis.map(d => (
               <div key={d.id} className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
                   <div className="flex justify-between items-start mb-4">
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
@@ -114,13 +139,13 @@ export default function ClientDevis() {
                       </div>
                       <div className="text-right">
                           <p className="text-xs text-gray-500">Est. Price</p>
-                          <p className="font-bold text-indigo-600 text-lg">${d.estimatedPrice}</p>
+                          <p className="font-bold text-[#0055A5] text-lg">${d.estimatedPrice}</p>
                       </div>
                   </div>
 
                   <div className="flex gap-2 flex-wrap mt-4 pt-4 border-t border-gray-100">
                       {d.status === 'DRAFT' && (
-                          <button onClick={() => handleAction(d.id, 'send')} className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">Mark Sent</button>
+                          <button onClick={() => handleAction(d.id, 'send')} className="flex-1 bg-[#0055A5] hover:bg-[#004080] text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">Mark Sent</button>
                       )}
                       {d.status === 'SENT' && (
                           <>
@@ -134,12 +159,21 @@ export default function ClientDevis() {
                   </div>
               </div>
           ))}
-          {devis.length === 0 && !isLoading && (
+          {paginatedDevis.length === 0 && !isLoading && (
               <div className="col-span-full bg-white rounded-2xl shadow-sm border border-gray-100 p-16 text-center">
                   <h3 className="text-xl font-bold text-gray-900 mb-1">No Quotes</h3>
-                  <p className="text-gray-500 text-sm">No price estimates have been created.</p>
+                  <p className="text-gray-500 text-sm">No price estimates have been found matching your search.</p>
               </div>
           )}
+      </div>
+
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 mb-6">
+          <TablePagination 
+              currentPage={currentPage}
+              totalPages={totalPages}
+              setCurrentPage={setCurrentPage}
+              totalElements={totalElements}
+          />
       </div>
 
       {showModal && (
@@ -149,14 +183,14 @@ export default function ClientDevis() {
                   <form onSubmit={handleCreate} className="space-y-4">
                       <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Client *</label>
-                          <select required value={formData.clientId} onChange={e => setFormData({...formData, clientId: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
+                          <select required value={formData.clientId} onChange={e => setFormData({...formData, clientId: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-[#0055A5] outline-none bg-white">
                               <option value="">Select a client...</option>
                               {clients.map(c => <option key={c.id} value={c.id}>{c.name} ({c.company})</option>)}
                           </select>
                       </div>
                       <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Piece (Catalog Item) *</label>
-                          <select required value={formData.pieceId} onChange={e => setFormData({...formData, pieceId: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
+                          <select required value={formData.pieceId} onChange={e => setFormData({...formData, pieceId: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-[#0055A5] outline-none bg-white">
                               <option value="">Select a piece...</option>
                               {pieces.map(p => <option key={p.id} value={p.id}>{p.name} (Ref: {p.reference})</option>)}
                           </select>
@@ -164,17 +198,17 @@ export default function ClientDevis() {
                       <div className="flex gap-4">
                           <div className="flex-1">
                               <label className="block text-sm font-medium text-gray-700 mb-1">Quantity *</label>
-                              <input required type="number" min="1" value={formData.quantity} onChange={e => setFormData({...formData, quantity: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none" />
+                              <input required type="number" min="1" value={formData.quantity} onChange={e => setFormData({...formData, quantity: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-[#0055A5] outline-none" />
                           </div>
                           <div className="flex-1">
                               <label className="block text-sm font-medium text-gray-700 mb-1">Est. Price ($)</label>
-                              <input type="number" step="0.01" value={formData.estimatedPrice} onChange={e => setFormData({...formData, estimatedPrice: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none" />
+                              <input type="number" step="0.01" value={formData.estimatedPrice} onChange={e => setFormData({...formData, estimatedPrice: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-[#0055A5] outline-none" />
                           </div>
                       </div>
                       
                       <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
                           <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">Cancel</button>
-                          <button type="submit" className="px-4 py-2 font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg">Create Quote</button>
+                          <button type="submit" className="px-4 py-2 font-semibold text-white bg-[#0055A5] hover:bg-[#004080] rounded-lg">Create Quote</button>
                       </div>
                   </form>
               </div>

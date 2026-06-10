@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { getToken } from "../../auth/auth";
+import useTablePagination from "../../hooks/useTablePagination";
+import TableSearch from "../../components/ui/TableSearch";
+import TablePagination from "../../components/ui/TablePagination";
 
 const API = "http://localhost:8080/api/clients";
 
@@ -12,6 +15,18 @@ export default function Clients() {
   const [formData, setFormData] = useState({ name: "", email: "", phone: "", company: "", address: "" });
   
   const headers = { Authorization: `Bearer ${getToken()}` };
+
+  const {
+      currentData: paginatedClients,
+      searchQuery,
+      setSearchQuery,
+      currentPage,
+      setCurrentPage,
+      totalPages,
+      rowsPerPage,
+      setRowsPerPage,
+      totalElements
+  } = useTablePagination(clients, ['name', 'company', 'email', 'phone'], 10);
 
   useEffect(() => {
     loadClients();
@@ -72,13 +87,20 @@ export default function Clients() {
         </div>
         <button 
             onClick={() => { setShowModal(true); setEditingId(null); setFormData({ name: "", email: "", phone: "", company: "", address: "" }); }} 
-            className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-medium transition-colors shadow-sm"
+            className="bg-[#0055A5] hover:bg-[#004080] text-white px-4 py-2 rounded-xl font-medium transition-colors shadow-sm"
         >
             + Add Client
         </button>
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <TableSearch 
+            searchQuery={searchQuery} 
+            setSearchQuery={setSearchQuery} 
+            placeholder="Search clients by name, company, or email..."
+            rowsPerPage={rowsPerPage}
+            setRowsPerPage={setRowsPerPage}
+        />
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -91,26 +113,32 @@ export default function Clients() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {clients.map(c => (
+              {paginatedClients.map(c => (
                   <tr key={c.id} className="hover:bg-gray-50 transition-colors">
                       <td className="p-4 font-medium text-gray-900">{c.name}</td>
                       <td className="p-4 text-gray-600">{c.company || "-"}</td>
                       <td className="p-4 text-gray-600">{c.email || "-"}</td>
                       <td className="p-4 text-gray-600">{c.phone || "-"}</td>
                       <td className="p-4 text-right space-x-3">
-                          <button onClick={() => openEdit(c)} className="text-indigo-600 hover:text-indigo-800 font-medium text-sm">Edit</button>
+                          <button onClick={() => openEdit(c)} className="text-[#0055A5] hover:text-indigo-800 font-medium text-sm">Edit</button>
                           <button onClick={() => deleteClient(c.id)} className="text-red-600 hover:text-red-800 font-medium text-sm">Delete</button>
                       </td>
                   </tr>
               ))}
-              {clients.length === 0 && !isLoading && (
+              {paginatedClients.length === 0 && !isLoading && (
                   <tr>
-                      <td colSpan="5" className="p-8 text-center text-gray-500">No clients found.</td>
+                      <td colSpan="5" className="p-8 text-center text-gray-500">No clients found matching your search.</td>
                   </tr>
               )}
             </tbody>
           </table>
         </div>
+        <TablePagination 
+            currentPage={currentPage}
+            totalPages={totalPages}
+            setCurrentPage={setCurrentPage}
+            totalElements={totalElements}
+        />
       </div>
 
       {showModal && (
@@ -120,28 +148,28 @@ export default function Clients() {
                   <form onSubmit={handleSave} className="space-y-4">
                       <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-                          <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none" />
+                          <input required type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-[#0055A5] outline-none" />
                       </div>
                       <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
-                          <input type="text" value={formData.company} onChange={e => setFormData({...formData, company: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none" />
+                          <input type="text" value={formData.company} onChange={e => setFormData({...formData, company: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-[#0055A5] outline-none" />
                       </div>
                       <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                          <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none" />
+                          <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-[#0055A5] outline-none" />
                       </div>
                       <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                          <input type="text" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none" />
+                          <input type="text" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-[#0055A5] outline-none" />
                       </div>
                       <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                          <textarea value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 outline-none" rows="2"></textarea>
+                          <textarea value={formData.address} onChange={e => setFormData({...formData, address: e.target.value})} className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-[#0055A5] outline-none" rows="2"></textarea>
                       </div>
                       
                       <div className="flex justify-end gap-3 pt-4">
                           <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg">Cancel</button>
-                          <button type="submit" className="px-4 py-2 font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg">Save Client</button>
+                          <button type="submit" className="px-4 py-2 font-semibold text-white bg-[#0055A5] hover:bg-[#004080] rounded-lg">Save Client</button>
                       </div>
                   </form>
               </div>

@@ -16,6 +16,10 @@ export default function SharedLayout({ sidebarContent, portalName }) {
     if (authData) {
         setUser(authData);
         loadNotifications();
+        
+        // Poll for new notifications every 15 seconds
+        const interval = setInterval(loadNotifications, 15000);
+        return () => clearInterval(interval);
     }
   }, []);
 
@@ -47,16 +51,17 @@ export default function SharedLayout({ sidebarContent, portalName }) {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 font-sans">
+    <div className="flex min-h-screen bg-[#F4F6F8] font-sans">
       {/* Sidebar */}
-      <aside className="w-64 bg-slate-900 text-white flex flex-col shadow-2xl z-20 shrink-0">
-        <div className="h-16 flex items-center px-6 bg-slate-950/50 border-b border-white/5 shrink-0">
-          <h1 className="text-xl font-bold tracking-wider text-indigo-400">
-            StockAI
-          </h1>
+      <aside className="w-64 bg-[#0A192F] text-white flex flex-col shadow-2xl z-20 shrink-0">
+        <div className="h-16 flex items-center px-6 bg-[#050D1A] border-b border-white/5 shrink-0">
+            <div className="flex items-center font-bold text-2xl tracking-tighter">
+                <span className="text-white">DXC</span>
+                <span className="text-[#9d53d6] text-[10px] uppercase font-bold tracking-widest ml-1 self-end mb-1">.technology</span>
+            </div>
         </div>
 
-        <nav className="flex-1 py-6 px-3 space-y-1 overflow-y-auto">
+        <nav className="flex-1 py-6 px-3 space-y-2 overflow-y-auto">
           {sidebarContent}
         </nav>
       </aside>
@@ -107,7 +112,7 @@ export default function SharedLayout({ sidebarContent, portalName }) {
                                                 onClick={() => handleMarkAsRead(n.id)}
                                                 className="px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-50 last:border-0 transition-colors group"
                                             >
-                                                <p className="text-sm text-gray-800 group-hover:text-indigo-600 transition-colors">{n.message}</p>
+                                                <p className="text-sm text-gray-800 group-hover:text-[#0055A5] transition-colors">{n.message}</p>
                                                 <p className="text-xs text-gray-400 mt-1">
                                                     {new Date(n.createdAt).toLocaleDateString()} {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </p>

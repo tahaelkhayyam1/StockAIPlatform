@@ -51,7 +51,7 @@ export default function SuperAdminSupport() {
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
             <h2 className="font-semibold text-gray-800">Pending Requests ({pendingRequests.length})</h2>
-            <button onClick={loadRequests} className="text-sm text-indigo-600 hover:text-indigo-800">Refresh</button>
+            <button onClick={loadRequests} className="text-sm text-[#0055A5] hover:text-indigo-800">Refresh</button>
         </div>
         <div className="divide-y divide-gray-100">
           {pendingRequests.length === 0 ? (
@@ -69,7 +69,7 @@ export default function SuperAdminSupport() {
                 <div>
                     <button 
                         onClick={() => resolveRequest(req.id)}
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        className="bg-[#0055A5] hover:bg-[#004080] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                     >
                         Resolve & Reset Password
                     </button>

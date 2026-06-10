@@ -70,7 +70,7 @@ export default function StockEntry() {
                     required 
                     value={form.pieceId} 
                     onChange={e => setForm({...form, pieceId: e.target.value})}
-                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-indigo-500 focus:border-indigo-500 bg-gray-50"
+                    className="w-full border border-gray-300 rounded-lg p-3 focus:ring-[#0055A5] focus:border-[#0055A5] bg-gray-50"
                 >
                     {pieces.map(p => (
                         <option key={p.id} value={p.id}>[{p.reference}] {p.name}</option>
@@ -87,7 +87,7 @@ export default function StockEntry() {
                         min="1" 
                         value={form.quantity} 
                         onChange={e => setForm({...form, quantity: parseInt(e.target.value) || 1})}
-                        className="w-full border border-gray-300 rounded-lg p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full border border-gray-300 rounded-lg p-3 focus:ring-[#0055A5] focus:border-[#0055A5]"
                     />
                 </div>
                 <div>
@@ -97,7 +97,7 @@ export default function StockEntry() {
                         type="text" 
                         value={form.reason} 
                         onChange={e => setForm({...form, reason: e.target.value})}
-                        className="w-full border border-gray-300 rounded-lg p-3 focus:ring-indigo-500 focus:border-indigo-500"
+                        className="w-full border border-gray-300 rounded-lg p-3 focus:ring-[#0055A5] focus:border-[#0055A5]"
                     />
                 </div>
             </div>

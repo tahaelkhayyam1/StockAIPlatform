@@ -16,6 +16,19 @@ export default function UserDetailsModal({ isOpen, onClose, user }) {
         </div>
         <div className="px-6 py-4 space-y-4">
           
+          {/* Profile Picture Display */}
+          <div className="flex justify-center mb-6">
+            <div className="h-24 w-24 rounded-full bg-indigo-50 border-4 border-white shadow-md flex items-center justify-center overflow-hidden shrink-0">
+                {user.profilePicture ? (
+                    <img src={`http://localhost:8080${user.profilePicture}`} alt="Profile" className="h-full w-full object-cover" />
+                ) : (
+                    <span className="text-2xl font-bold text-[#0055A5]">
+                        {user.username ? user.username.substring(0, 2).toUpperCase() : '??'}
+                    </span>
+                )}
+            </div>
+          </div>
+          
           <div className="flex flex-col space-y-1">
             <span className="text-sm font-medium text-gray-500">ID</span>
             <span className="text-base text-gray-900">{user.id}</span>

@@ -73,9 +73,9 @@ export default function Login() {
                 </div>
                 
                 <nav className="ml-12 hidden md:flex space-x-8 text-sm font-semibold text-gray-700">
-                    <a href="#" className="hover:text-blue-600 transition-colors">Accueil</a>
-                    <a href="#" className="hover:text-blue-600 transition-colors">À Propos</a>
-                    <a href="#" className="hover:text-blue-600 transition-colors">Contact</a>
+                    <a href="#" className="hover:text-[#0055A5] transition-colors">Accueil</a>
+                    <a href="#" className="hover:text-[#0055A5] transition-colors">À Propos</a>
+                    <a href="#" className="hover:text-[#0055A5] transition-colors">Contact</a>
                 </nav>
             </header>
 

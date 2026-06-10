@@ -34,6 +34,9 @@ public class Piece {
 
     private String barcode;
 
+    @org.hibernate.annotations.Formula("(SELECT COALESCE(SUM(CASE WHEN m.type = 'ENTRY' THEN m.quantity ELSE -m.quantity END), 0) FROM stock_movement m WHERE m.piece_id = id)")
+    private Integer currentStock;
+
     @OneToMany(mappedBy = "piece")
     @JsonIgnore
     private List<StockMovement> movements;

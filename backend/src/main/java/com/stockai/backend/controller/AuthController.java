@@ -25,11 +25,17 @@ public class AuthController {
     private final EmailService emailService;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public AuthController(UserRepository userRepository, JwtService jwtService, EmailService emailService) {
+    private final com.stockai.backend.service.NotificationService notificationService;
+
+    public AuthController(UserRepository userRepository, JwtService jwtService, EmailService emailService, com.stockai.backend.service.NotificationService notificationService) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.emailService = emailService;
+        this.notificationService = notificationService;
     }
+
+    @org.springframework.beans.factory.annotation.Value("${app.security.2fa.enabled:true}")
+    private boolean twoFactorEnabled;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
@@ -53,16 +59,26 @@ public class AuthController {
             throw new RuntimeException("Account disabled");
         }
 
-        // Check if device is trusted
-        if (request.getDeviceId() != null && request.getDeviceId().equals(user.getTrustedDeviceId())) {
+        // Check if 2FA is disabled globally OR if device is trusted
+        if (!twoFactorEnabled || (request.getDeviceId() != null && request.getDeviceId().equals(user.getTrustedDeviceId()))) {
             // Bypass 2FA
+            user.setLastLogin(LocalDateTime.now());
+            
+            String deviceIdToReturn = request.getDeviceId();
+            if (deviceIdToReturn == null) {
+                deviceIdToReturn = java.util.UUID.randomUUID().toString();
+                user.setTrustedDeviceId(deviceIdToReturn);
+            }
+            
+            userRepository.save(user);
+
             String token = jwtService.generateToken(user.getEmail());
             return ResponseEntity.ok(new AuthResponse(
                     token,
                     user.getRole().name(),
                     user.getEmail(),
                     user.getId(),
-                    user.getTrustedDeviceId()
+                    deviceIdToReturn
             ));
         }
 
@@ -133,6 +149,10 @@ public class AuthController {
         user.setActive(false);
         user.setArchived(false);
 
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        
+        notificationService.notifyRole(Role.SUPER_ADMIN, "New user registration: " + savedUser.getEmail());
+        
+        return savedUser;
     }
 }

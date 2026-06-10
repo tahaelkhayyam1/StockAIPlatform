@@ -53,7 +53,7 @@ export default function EditUserModal({ isOpen, onClose, onEdit, user }) {
               type="text"
               name="username"
               required
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#0055A5] focus:border-[#0055A5] sm:text-sm"
               value={formData.username}
               onChange={handleChange}
             />
@@ -64,7 +64,7 @@ export default function EditUserModal({ isOpen, onClose, onEdit, user }) {
               type="email"
               name="email"
               required
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#0055A5] focus:border-[#0055A5] sm:text-sm"
               value={formData.email}
               onChange={handleChange}
             />
@@ -74,7 +74,7 @@ export default function EditUserModal({ isOpen, onClose, onEdit, user }) {
             <input
               type="text"
               name="phone"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#0055A5] focus:border-[#0055A5] sm:text-sm"
               value={formData.phone}
               onChange={handleChange}
             />
@@ -84,7 +84,7 @@ export default function EditUserModal({ isOpen, onClose, onEdit, user }) {
             <input
               type="number"
               name="age"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#0055A5] focus:border-[#0055A5] sm:text-sm"
               value={formData.age}
               onChange={handleChange}
             />
@@ -93,7 +93,7 @@ export default function EditUserModal({ isOpen, onClose, onEdit, user }) {
             <label className="block text-sm font-medium text-gray-700">Role</label>
             <select
               name="role"
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-[#0055A5] focus:border-[#0055A5] sm:text-sm"
               value={formData.role}
               onChange={handleChange}
             >
@@ -114,7 +114,7 @@ export default function EditUserModal({ isOpen, onClose, onEdit, user }) {
             </button>
             <button
               type="submit"
-              className="bg-blue-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-blue-700 focus:outline-none"
+              className="bg-[#0055A5] border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-[#004080] focus:outline-none"
             >
               Save Changes
             </button>
